@@ -37,7 +37,7 @@ const TodoFilters = ({
             className={cn(
               "px-4 py-2 rounded-lg transition-colors",
               filter === key
-                ? "bg-blue-100 text-blue-700 font-medium"
+                ? "bg-purple-100 text-purple-700 font-medium"
                 : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
             )}
           >

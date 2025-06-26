@@ -45,8 +45,8 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }: TodoItemProps) => {
         className={cn(
           "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200",
           todo.completed
-            ? "bg-green-500 border-green-500 text-white"
-            : "border-gray-300 hover:border-green-400"
+            ? "bg-purple-500 border-purple-500 text-white"
+            : "border-gray-300 hover:border-purple-400"
         )}
       >
         {todo.completed && <Check className="w-4 h-4" />}
@@ -101,7 +101,7 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }: TodoItemProps) => {
               size="sm"
               variant="ghost"
               onClick={() => setIsEditing(true)}
-              className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              className="h-8 w-8 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
             >
               <Edit2 className="w-4 h-4" />
             </Button>
