@@ -4,12 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Plus, Calendar as CalendarIcon, Tag } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Plus, Calendar as CalendarIcon, Tag, Flag } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 interface TodoFormProps {
-  onAddTodo: (text: string, deadline?: Date, labels?: string[]) => void;
+  onAddTodo: (text: string, deadline?: Date, labels?: string[], priority?: 'low' | 'medium' | 'high') => void;
 }
 
 const TodoForm = ({ onAddTodo }: TodoFormProps) => {
@@ -17,15 +18,17 @@ const TodoForm = ({ onAddTodo }: TodoFormProps) => {
   const [deadline, setDeadline] = useState<Date | undefined>();
   const [labelInput, setLabelInput] = useState('');
   const [labels, setLabels] = useState<string[]>([]);
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (text.trim()) {
-      onAddTodo(text, deadline, labels);
+      onAddTodo(text, deadline, labels, priority);
       setText('');
       setDeadline(undefined);
       setLabels([]);
       setLabelInput('');
+      setPriority('medium');
     }
   };
 
@@ -41,6 +44,15 @@ const TodoForm = ({ onAddTodo }: TodoFormProps) => {
 
   const removeLabel = (labelToRemove: string) => {
     setLabels(labels.filter(label => label !== labelToRemove));
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'text-red-600';
+      case 'medium': return 'text-yellow-600';
+      case 'low': return 'text-green-600';
+      default: return 'text-gray-600';
+    }
   };
 
   return (
@@ -63,6 +75,34 @@ const TodoForm = ({ onAddTodo }: TodoFormProps) => {
       </div>
 
       <div className="flex flex-wrap gap-3">
+        {/* Priority Selector */}
+        <Select value={priority} onValueChange={(value: 'low' | 'medium' | 'high') => setPriority(value)}>
+          <SelectTrigger className="w-40">
+            <Flag className={cn("mr-2 h-4 w-4", getPriorityColor(priority))} />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="high">
+              <div className="flex items-center gap-2">
+                <Flag className="h-4 w-4 text-red-600" />
+                Alta
+              </div>
+            </SelectItem>
+            <SelectItem value="medium">
+              <div className="flex items-center gap-2">
+                <Flag className="h-4 w-4 text-yellow-600" />
+                Média
+              </div>
+            </SelectItem>
+            <SelectItem value="low">
+              <div className="flex items-center gap-2">
+                <Flag className="h-4 w-4 text-green-600" />
+                Baixa
+              </div>
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
         {/* Deadline Picker */}
         <Popover>
           <PopoverTrigger asChild>

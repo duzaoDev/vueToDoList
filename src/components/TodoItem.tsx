@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Check, X, Edit2, Trash2, Save, Calendar as CalendarIcon, Tag } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Check, X, Edit2, Trash2, Save, Calendar as CalendarIcon, Tag, Flag } from 'lucide-react';
 import { format, isAfter, isBefore, startOfDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -13,7 +14,7 @@ interface TodoItemProps {
   todo: Todo;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
-  onEdit: (id: string, text: string, deadline?: Date, labels?: string[]) => void;
+  onEdit: (id: string, text: string, deadline?: Date, labels?: string[], priority?: 'low' | 'medium' | 'high') => void;
 }
 
 const TodoItem = ({ todo, onToggle, onDelete, onEdit }: TodoItemProps) => {
@@ -21,11 +22,12 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }: TodoItemProps) => {
   const [editText, setEditText] = useState(todo.text);
   const [editDeadline, setEditDeadline] = useState<Date | undefined>(todo.deadline);
   const [editLabels, setEditLabels] = useState<string[]>(todo.labels || []);
+  const [editPriority, setEditPriority] = useState<'low' | 'medium' | 'high'>(todo.priority);
   const [labelInput, setLabelInput] = useState('');
 
   const handleEdit = () => {
     if (editText.trim()) {
-      onEdit(todo.id, editText, editDeadline, editLabels);
+      onEdit(todo.id, editText, editDeadline, editLabels, editPriority);
     }
     setIsEditing(false);
     resetEditState();
@@ -40,6 +42,7 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }: TodoItemProps) => {
     setEditText(todo.text);
     setEditDeadline(todo.deadline);
     setEditLabels(todo.labels || []);
+    setEditPriority(todo.priority);
     setLabelInput('');
   };
 
@@ -55,6 +58,24 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }: TodoItemProps) => {
 
   const removeLabel = (labelToRemove: string) => {
     setEditLabels(editLabels.filter(label => label !== labelToRemove));
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'text-red-600';
+      case 'medium': return 'text-yellow-600';
+      case 'low': return 'text-green-600';
+      default: return 'text-gray-600';
+    }
+  };
+
+  const getPriorityBg = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-100 text-red-700';
+      case 'medium': return 'bg-yellow-100 text-yellow-700';
+      case 'low': return 'bg-green-100 text-green-700';
+      default: return 'bg-gray-100 text-gray-700';
+    }
   };
 
   const isOverdue = todo.deadline && !todo.completed && isBefore(todo.deadline, startOfDay(new Date()));
@@ -97,6 +118,18 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }: TodoItemProps) => {
               />
               
               <div className="flex flex-wrap gap-2">
+                <Select value={editPriority} onValueChange={(value: 'low' | 'medium' | 'high') => setEditPriority(value)}>
+                  <SelectTrigger className="w-32">
+                    <Flag className={cn("mr-2 h-3 w-3", getPriorityColor(editPriority))} />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="high">Alta</SelectItem>
+                    <SelectItem value="medium">Média</SelectItem>
+                    <SelectItem value="low">Baixa</SelectItem>
+                  </SelectContent>
+                </Select>
+
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -166,6 +199,17 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }: TodoItemProps) => {
               </span>
               
               <div className="flex flex-wrap gap-2 items-center">
+                {/* Priority Badge */}
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1 px-2 py-1 rounded text-xs",
+                    getPriorityBg(todo.priority)
+                  )}
+                >
+                  <Flag className="w-3 h-3" />
+                  {todo.priority === 'high' ? 'Alta' : todo.priority === 'medium' ? 'Média' : 'Baixa'}
+                </span>
+
                 {todo.deadline && (
                   <span
                     className={cn(
