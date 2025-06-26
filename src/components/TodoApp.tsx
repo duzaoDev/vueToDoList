@@ -25,7 +25,7 @@ const TodoApp = () => {
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <CheckCircle2 className="w-10 h-10 text-blue-600" />
+          <CheckCircle2 className="w-10 h-10 text-purple-600" />
           <h1 className="text-4xl font-bold text-gray-800">Todo App</h1>
         </div>
         <p className="text-gray-600">Organize suas tarefas de forma simples e eficiente</p>
