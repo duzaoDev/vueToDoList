@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 export interface Todo {
@@ -6,6 +5,8 @@ export interface Todo {
   text: string;
   completed: boolean;
   createdAt: Date;
+  deadline?: Date;
+  labels: string[];
 }
 
 export type FilterType = 'all' | 'active' | 'completed';
@@ -37,13 +38,15 @@ export const useTodos = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
   }, [todos]);
 
-  const addTodo = (text: string) => {
+  const addTodo = (text: string, deadline?: Date, labels: string[] = []) => {
     if (text.trim()) {
       const newTodo: Todo = {
         id: Date.now().toString(),
         text: text.trim(),
         completed: false,
-        createdAt: new Date()
+        createdAt: new Date(),
+        deadline,
+        labels
       };
       setTodos(prev => [newTodo, ...prev]);
     }
@@ -61,11 +64,11 @@ export const useTodos = () => {
     setTodos(prev => prev.filter(todo => todo.id !== id));
   };
 
-  const editTodo = (id: string, newText: string) => {
+  const editTodo = (id: string, newText: string, deadline?: Date, labels: string[] = []) => {
     if (newText.trim()) {
       setTodos(prev =>
         prev.map(todo =>
-          todo.id === id ? { ...todo, text: newText.trim() } : todo
+          todo.id === id ? { ...todo, text: newText.trim(), deadline, labels } : todo
         )
       );
     }
